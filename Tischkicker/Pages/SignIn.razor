@@ -1,0 +1,50 @@
+﻿@page "/signin"
+@using System.ComponentModel.DataAnnotations
+@using Data;
+@inherits LayoutComponentBase
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject NavigationManager NavManager
+<div class="container">
+    <h1>Anmelden</h1>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label style="color:white" for="email">Email:</label>
+                    <InputText class="form-control" id="email" @bind-Value="@Model.Email" />
+                    <ValidationMessage For="@(() => Model.Email)" />
+                </div>
+                <div class="form-group">
+                    <label style="color:white" for="password">Passwort:</label>
+                    <InputText type="password" class="form-control" id="password" @bind-Value="@Model.Password" />
+                    <ValidationMessage For="@(() => Model.Password)" />
+                </div>
+                <button type="submit" class="btn btn-primary">Einloggen</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private SignInModel Model { get; set; } = new SignInModel();
+    UserService userService = new UserService();
+    User user = null;
+    private async void HandleValidSubmit()
+    {
+
+        user = userService.CheckLogin(Model);
+        if(user != null){
+            await localStorage.SetItemAsync("sessionID", user.userID);
+            StateHasChanged();
+            NavManager.NavigateTo("/Success/Angemeldet");
+        }
+        else
+        {
+            NavManager.NavigateTo("/SignIn");
+        }
+    }
+
+    
+}

@@ -1,0 +1,39 @@
+﻿@using Tischkicker.Data;
+
+
+<h1 style="color:white;font-size:4rem">@selectedCategory</h1>
+<div class="row">
+@foreach (Product product in filteredProducts)
+{
+    @if (product != null)
+    {
+        <div class="col-4">
+            <div class="card" style="width: 90%; background-color:#212f3a">
+                <img class="card-img-top" src="@product.picUrls[0]" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title" style="color:white;font-size:16pt">@product.name</h5>
+                    <p class="card-text" style="color:white;font-size:11pt">@product.description</p>
+                    <p class="card-text" style="color:green">@product.price€</p>
+                    <div class="row">
+                    <a href="/item/@product.id" class="btn btn-secondary col-6">Ansehen</a>
+                    <button class="btn btn-primary col-6">In den Warenkorb</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+</div>
+
+@code {
+    
+    [Parameter]
+    public List<Product> filteredProducts { get; set; }
+
+    [Parameter]
+    public string selectedCategory { get; set; }
+
+
+    
+    
+}

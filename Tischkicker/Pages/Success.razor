@@ -1,0 +1,8 @@
+﻿@page "/Success/{message}"
+<h1 style="color:white;border-color:green;border:double">Erfolg!</h1>
+
+<h3 style="color:white">Du hast dich erfolgreich @message!</h3>
+@code {
+    [Parameter]
+    public string message { get; set; }
+}

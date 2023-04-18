@@ -1,0 +1,115 @@
+﻿@page "/User";
+@using Tischkicker.Data
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavManager
+
+
+
+@if (user != null)
+{
+    <div class="row">
+        <div class="col-3">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <button @onclick="() => listID = 1" class="nav-link btn btn-outline-primary">Email</button>
+                </li>
+                <li class="nav-item">
+                    <button @onclick="() => listID = 2" class="nav-link btn btn-outline-primary">Nutzername und Passwort</button>
+                </li>
+                <li class="nav-item">
+                    <button @onclick="() => DeleteUser(user)" class="nav-link btn btn-danger">Account Löschen</button>
+                </li>
+                <li class="nav-item">
+                    <button @onclick="()=> Logout()" class="nav-link btn btn-outline-danger">Auslogen</button>
+                </li>
+            </ul>
+        </div>
+        <div class="col-9">
+            @if (listID != -1)
+            {
+            @if (listID == 1)
+            {
+            <form>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Email Adresse</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Neue Email" @bind-value="@TempUser.email">
+                    <small id="emailHelp" class="form-text text-muted">Wir Teilen deine Email mit keinem!</small>
+                </div>
+
+
+            </form>
+            }
+            else if (listID == 2)
+            {
+            <form>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Nutzername</label>
+                    <input class="form-control" id="exampleInputPassword1" aria-describedby="emailHelp" placeholder="Neuer Nutzername" @bind="TempUser.username">
+                    <hr>
+                    <label for="exampleInputEmail1">Momentanes Passwort</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" aria-describedby="emailHelp" placeholder="Momentanes Passwort" @bind="checkPassword">
+                    <label for="exampleInputEmail1">Neues Passwort</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" aria-describedby="emailHelp" placeholder="Neues Passwort" @bind="TempUser.passwort">
+
+                </div>
+
+
+            </form>
+            <br />
+            }
+        
+    
+}
+</div>
+<hr>
+<button type="button" @onclick=" () => UpdateUser()" class="btn btn-primary">Bestätigen</button>
+</div>
+}
+
+
+
+
+@code {
+    User TempUser;
+    string checkPassword = "";
+    int listID = -1;
+    int sessionId = -1;
+    User user = null;
+    UserService userService = new UserService();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            sessionId = Convert.ToInt32(await localStorage.GetItemAsync<string>("sessionID"));
+            if (sessionId != 0)
+            {
+                Console.WriteLine(sessionId);
+                if (sessionId != -1)
+                {
+                    user = GetUser(sessionId);
+                    TempUser = user;
+                    StateHasChanged();
+                }
+            }
+        }
+    }
+
+    private void DeleteUser(User user)
+    {
+        userService.DeleteUser(user);
+    }
+    private User GetUser(int id)
+    {
+        return userService.GetUser(id);
+    }
+    private void UpdateUser()
+    {
+        userService.UpdateUser(TempUser);
+    }
+    private async void Logout()
+    {
+        await localStorage.RemoveItemAsync("sessionID");
+        StateHasChanged();
+        NavManager.NavigateTo("/");
+    }
+}

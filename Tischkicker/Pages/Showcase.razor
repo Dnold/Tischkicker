@@ -1,0 +1,47 @@
+﻿@using Data;
+<h1 style="color:white">Empfohlene Produkte</h1>
+<a href="/products" style="height:4rem;font-size:2rem; text-align:center; vertical-align:central" class="btn btn-outline-primary">Alle Produkte</a>
+<br />
+<div class="row">
+    @foreach(Product product in products)
+    {
+        @if(product != null){
+        <div class="col-3">
+            <div class="card" style="width: 90%;margin-bottom:2em; background-color:#212f3a">
+  <img class="card-img-top" src="@product.picUrls[0]" alt="Card image cap">
+  <div class="card-body">
+    <h5 class="card-title" style="color:white;font-size:16pt">@product.name</h5>
+    <p class="card-text" style="color:white;font-size:11pt">@product.description</p>
+    <p class="card-text" style="color:green">@product.price€</p>
+    <a href="#" class="btn btn-primary">Ansehen</a>
+  </div>
+</div>
+        </div>
+        }
+    }
+</div>
+
+
+        @code{
+        public List<Product> products = new List<Product>();
+        ProductService productService = new ProductService();
+        protected override void OnInitialized()
+        {
+            products = new List<Product>();
+            products = productService.GetProducts();
+            products = GetFirstFourItems(products);
+
+        }
+
+        private List<Product> GetFirstFourItems(List<Product> pros)
+        {
+            List<Product> productss = new List<Product>();
+
+            for(int i = 0; i <= 4; i++)
+            {
+                productss.Add(pros.FirstOrDefault(e => e.id == i));
+            }
+            return productss;
+        }
+
+}

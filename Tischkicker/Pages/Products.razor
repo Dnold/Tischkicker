@@ -1,0 +1,98 @@
+﻿@using Tischkicker.Data;
+@page "/Products"
+
+<h1 style="color:white;font-size:4rem">Kategorien</h1>
+<div class="row">
+@foreach(Category category in categories)
+{
+    <div @onclick="()=>GetProductsFromCategory(category)" style="background-image:url('@category.imgUrl');margin-bottom:1em"class="intro-slide background-tint col-3" id="parent">
+            <h1 style="color:white;font-size:2rem;text-align:center; vertical-align:central" id="hover-content">@category.Name</h1>
+    </div>
+}   
+</div>
+
+<ProductsWindow  filteredProducts="@filteredProducts" selectedCategory="@selectedCategory"></ProductsWindow>
+
+
+
+
+
+
+
+
+
+
+
+<style>
+    .intro-slide {
+        border-radius:1em;
+        
+        background-image: url('background.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 50vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin:0.5em;
+    }
+    .background-tint {
+  background-color: rgba(0,0,0,0);
+  background-blend-mode: multiply;
+  filter:grayscale(30%)
+}
+.background-tint:hover{
+    background-color: rgba(0,0,0,0.75);
+}
+
+#hover-content {
+    display:none;
+}
+#parent:hover #hover-content {
+    display:block;
+}
+</style>
+@code {
+    [Parameter]
+    public EventCallback<List<Product>> selectedCategoryValueChanged { get; set; }
+
+    CategoryService categoryService = new CategoryService();
+    ProductService productService = new ProductService();
+
+    List<Product> filteredProducts = new List<Product>();
+    List<Category> categories = new List<Category>();
+    List<Product> products = new List<Product>();
+
+    string selectedCategory = "Alle Produkte";
+
+    List<Product> GetProducts()
+    {
+        return productService.GetProducts();
+    }
+    List<Category> GetCategories()
+    {
+        return categoryService.GetCategories();
+    }
+
+    protected override void OnInitialized()
+    {
+        categories = GetCategories();
+        products = GetProducts();
+        filteredProducts = products;
+        base.OnInitialized();
+    }
+
+    async Task GetProductsFromCategory(Category category)
+    {
+        filteredProducts = products.Where(e => e.categoryId == category.Id).ToList();
+        selectedCategory = category.Name;
+        await CategoryChanged();
+
+    }
+    async Task CategoryChanged()
+    {
+        if(filteredProducts != null){
+        await selectedCategoryValueChanged.InvokeAsync(filteredProducts);
+        }
+    }
+}

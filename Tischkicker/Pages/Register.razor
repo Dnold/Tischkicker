@@ -1,0 +1,49 @@
+﻿@page "/register"
+
+@using Data;
+@inherits LayoutComponentBase
+
+<div class="container">
+    <h1 style="color:white">Registrierung</h1>
+    <p style="color:white;font-size: 22pt">Herzlich willkommen bei unserer Registrierungsseite! Wenn Sie noch keinen Account haben, laden wir Sie herzlich dazu ein, sich anzumelden und Teil unserer Community zu werden. Mit einem Account können Sie bequem und einfach Tischfußballtische und Zubehör bestellen, auf Ihre Bestellhistorie zugreifen und von exklusiven Angeboten profitieren.</p>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label style="color:white;font-size:22pt" for="username">Benutzername:</label>
+                    <InputText class="form-control" id="username" @bind-Value="@Model.Username" />
+                    <ValidationMessage For="@(() => Model.Username)" />
+                </div>
+                <div class="form-group">
+                    <label style="color:white;font-size:22pt" for="email">Email:</label>
+                    <InputText class="form-control" id="email" @bind-Value="@Model.Email" />
+                    <ValidationMessage For="@(() => Model.Email)" />
+                </div>
+                <div class="form-group">
+                    <label style="color:white;font-size:22pt" for="password">Passwort:</label>
+                    <InputText type="password" class="form-control" id="password" @bind-Value="@Model.Password" />
+                    <ValidationMessage For="@(() => Model.Password)" />
+                </div>
+                <div class="form-group">
+                    <label style="color:white;font-size:22pt" for="confirmPassword">Passwort bestätigen:</label>
+                    <InputText type="password" class="form-control" id="confirmPassword" @bind-Value="@Model.ConfirmPassword" />
+                    <ValidationMessage For="@(() => Model.ConfirmPassword)" />
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RegisterModel Model { get; set; } = new RegisterModel();
+    UserService userService = new UserService();
+    private void HandleValidSubmit()
+    {
+        userService.CreateUser(Model);   
+    }
+
+   
+    }

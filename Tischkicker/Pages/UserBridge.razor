@@ -1,0 +1,71 @@
+﻿@using Data;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavManager
+
+    <div style="float:right;position:page">
+        @{
+if (user == null)
+{
+    <button class="btn btn-outline-primary" style="color:white"><a style="color:white" href="/signIn">Anmelden</a></button>
+
+}
+else
+{
+    <div class="row">
+    <div class="col-4">
+  <a href="/user" class="btn btn-secondary">@user.username</a>
+</div>
+ <div class="col-4">
+  <button @onclick="()=>Logout()" class="btn btn-danger">Auslogen</button>
+</div>
+ <div class="col-4">
+  <button class="btn btn-outline-info">Warenkorb</button>
+</div>
+</div>
+}
+}
+</div>
+
+
+
+@code {
+    int sessionId = -1;
+    User user = null;
+    UserService userService = new UserService();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender){
+            sessionId = Convert.ToInt32(await localStorage.GetItemAsync<string>("sessionID"));
+            if(sessionId != 0){
+                Console.WriteLine(sessionId);
+                if(sessionId != -1){
+                    user = GetUser(sessionId);
+                    StateHasChanged();
+                }
+            }
+        }
+    }
+
+    private User GetUser(int id)
+    {
+        return userService.GetUser(id);
+    }
+
+    private async void Logout()
+    {
+        await localStorage.RemoveItemAsync("sessionID");
+        StateHasChanged();
+        NavManager.NavigateTo("/");
+    }
+    }
+
+
+
+
+
+
+
+
+
+
+

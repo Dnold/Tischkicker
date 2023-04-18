@@ -1,0 +1,39 @@
+﻿@using Tischkicker.Data;
+@page "/item/{id}"
+
+<div class="row">
+    <div class="col-6">
+        <img style="width: 100%;height: 100%;object-fit: cover;overflow: hidden; border-radius:1em" src="@product.picUrls[0]" />
+
+    </div>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 style="font-size:3rem">@product.name</h3>
+                <p style="font-size:1.5rem">@product.description</p>
+
+                <h5 style="color:green">@product.price €</h5>
+
+                <button class="btn btn-info">In den Warenkorb</button>
+            </div>
+        </div>
+
+    </div>
+
+
+
+</div>
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    Product product;
+
+    ProductService productService = new ProductService();
+    protected override void OnInitialized()
+    {
+        product = productService.GetProduct(Convert.ToInt32(id));
+        base.OnInitialized();
+    }
+}
